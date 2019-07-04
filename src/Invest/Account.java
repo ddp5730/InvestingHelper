@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,8 +16,11 @@ import static java.lang.System.exit;
 public class Account {
 
     private static final String FILE_PREFIX = "Portfolio_Position";
+    private static final String PERSONALINVEST_CODE = "X78636590";
+    private static final String ROTHIRA_CODE = "229366432";
 
     private String name;
+    private String code;
     private double totalValue;
 
     private List<Position> positions;
@@ -27,14 +31,14 @@ public class Account {
     /**
      * Create a new account from file
      * @param name The name of the account.
+     * @param code The code for this account in the .csv file.
      */
-    public Account(String name) {
+    public Account(String name, String code) {
         positions = new ArrayList<>();
 
+        this.name = name;
+        this.code = code;
         totalValue = 0;
-        for (Position pos : positions) {
-            totalValue += pos.getValue() * pos.getQuantity();
-        }
 
         rebalanceComplete = false;
     }
@@ -100,14 +104,66 @@ public class Account {
      * This method shall be able to parse the investment file and create the relevent account files from it.
      * @param accountDir The directory of the account files.
      */
-    public static void readFile(String accountDir) throws FileNotFoundException{
+    public static List<Account> readFile(String accountDir) throws FileNotFoundException{
 
         File investmentFile = findInvestmentFile(accountDir);
         if (investmentFile == null) {
             throw new FileNotFoundException();
         }
 
-        System.out.println(investmentFile.getName());
+        Account PersonalInvest = new Account ("Personal Invest", PERSONALINVEST_CODE);
+        Account RothIRA = new Account("Roth IRA", ROTHIRA_CODE);
+        ArrayList<Account> portfolio = new ArrayList<>();
+        portfolio.add(PersonalInvest);
+        portfolio.add(RothIRA);
+
+        try {
+            Scanner reader = new Scanner(investmentFile);
+
+            while(reader.hasNext()) {
+                String Line = reader.nextLine();
+                Line = Line.strip();
+
+                if (Line.equals("")) {
+                    break;
+                }
+
+                String[] tokens = Line.split(",");
+                for (int i = 0; i < 3; i++) {
+                    tokens[i] = tokens[i].substring(1, tokens[i].length() - 1);
+                }
+
+                String accountCode = tokens[0];
+
+                Account thisAccount = null;
+                for (int i = 0; i < portfolio.size(); i++) {
+                    Account account = portfolio.get(i);
+                    if(account.code.equals(accountCode)) {
+                        thisAccount = account;
+                        break;
+                    }
+                }
+
+                // Break out if the account does not exist in file already.
+                if (thisAccount == null) {
+                    continue;
+                }
+
+                String posName = tokens[1];
+                double posQuantity = Double.parseDouble(tokens[3]);
+                double posValue = Double.parseDouble(tokens[4].substring(1));
+
+                Position position = new Position(posName, posValue, posQuantity);
+
+                thisAccount.positions.add(position);
+            }
+        }
+        catch (IOException io) {
+            System.err.println(io.getMessage());
+            exit(1);
+        }
+
+        return portfolio;
     }
 
     /**

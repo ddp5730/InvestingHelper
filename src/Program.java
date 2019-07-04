@@ -24,7 +24,6 @@ import static java.lang.System.exit;
  */
 public class Program {
 
-    private static final String ROTHIRA_NAME="229366432";
     private static final String REF_FILE_PATH="AccountFiles/";
 
     private static List<Account> accounts;
@@ -37,11 +36,15 @@ public class Program {
     public static void main(String[] args) {
 
         try {
-            Account.readFile(REF_FILE_PATH);
+            accounts = Account.readFile(REF_FILE_PATH);
         }
         catch (FileNotFoundException fileException) {
             System.err.println("The file could not be found in '" + REF_FILE_PATH + "'");
             exit(1);
+        }
+
+        for (Account account : accounts) {
+            account.debug(false);
         }
 
     }
