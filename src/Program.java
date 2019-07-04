@@ -1,9 +1,13 @@
 import Invest.Account;
 import Invest.Template;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import static java.lang.System.exit;
 
 /**
  * Will handle the running of the program
@@ -20,6 +24,9 @@ import java.util.Scanner;
  */
 public class Program {
 
+    private static final String ROTHIRA_NAME="229366432";
+    private static final String REF_FILE_PATH="AccountFiles/";
+
     private static List<Account> accounts;
 
     /**
@@ -28,14 +35,15 @@ public class Program {
      * @param args command line arguments; ignored.
      */
     public static void main(String[] args) {
-        accounts = new ArrayList<>();
-        Account PersonalInvest = new Account("AccountFiles/personalInvest.txt");
-        accounts.add(PersonalInvest);
 
-        Account RothIRA = new Account("AccountFiles/RothIRA.txt");
-        accounts.add(RothIRA);
+        try {
+            Account.readFile(REF_FILE_PATH);
+        }
+        catch (FileNotFoundException fileException) {
+            System.err.println("The file could not be found in '" + REF_FILE_PATH + "'");
+            exit(1);
+        }
 
-        mainLoop();
     }
 
     /**
@@ -99,6 +107,5 @@ public class Program {
         account.debug(true);
         System.out.println();
     }
-
 
 }

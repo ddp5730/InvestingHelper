@@ -1,6 +1,7 @@
 package Invest;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import static java.lang.System.exit;
  */
 public class Account {
 
+    private static final String FILE_PREFIX = "Portfolio_Position";
+
     private String name;
     private double totalValue;
 
@@ -23,11 +26,10 @@ public class Account {
 
     /**
      * Create a new account from file
-     * @param filename The filename to create the account from
+     * @param name The name of the account.
      */
-    public Account(String filename) {
+    public Account(String name) {
         positions = new ArrayList<>();
-        readFile(filename);
 
         totalValue = 0;
         for (Position pos : positions) {
@@ -49,7 +51,7 @@ public class Account {
     /**
      * Will read the information from a file to initialize an account
      * @param filename the file to read from
-     */
+
     private void readFile(String filename) {
         try {
             Scanner reader = new Scanner(new File(filename));
@@ -70,6 +72,42 @@ public class Account {
             exit(1);
         }
 
+    }
+    */
+
+    /**
+     * This method will find the portfolio file in the account directory if it can be found.
+     * @return The file if it exists; null if not.
+     */
+    private static File findInvestmentFile(String accountDir) {
+        File dir = new File(accountDir);
+        File[] files = dir.listFiles();
+
+        File portfolioFile = null;
+        for (File file : files) {
+            String filename = file.getName();
+            if (filename.startsWith(FILE_PREFIX)) {
+                portfolioFile = file;
+                break;
+            }
+        }
+
+        return portfolioFile;
+    }
+
+
+    /**
+     * This method shall be able to parse the investment file and create the relevent account files from it.
+     * @param accountDir The directory of the account files.
+     */
+    public static void readFile(String accountDir) throws FileNotFoundException{
+
+        File investmentFile = findInvestmentFile(accountDir);
+        if (investmentFile == null) {
+            throw new FileNotFoundException();
+        }
+
+        System.out.println(investmentFile.getName());
     }
 
     /**
