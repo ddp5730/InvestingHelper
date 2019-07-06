@@ -68,6 +68,7 @@ public class Account {
                 if (filename.startsWith(FILE_PREFIX)) {
                     portfolioFile = file;
                     break;
+
                 }
             }
 
