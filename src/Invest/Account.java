@@ -41,6 +41,7 @@ public class Account {
         totalValue = 0;
 
         rebalanceComplete = false;
+        this.setTemplate(Template.TEMPLATE);
     }
 
     /**
@@ -51,33 +52,6 @@ public class Account {
     public boolean isRebalanceComplete() {
         return rebalanceComplete;
     }
-
-    /**
-     * Will read the information from a file to initialize an account
-     * @param filename the file to read from
-
-    private void readFile(String filename) {
-        try {
-            Scanner reader = new Scanner(new File(filename));
-
-            name = reader.nextLine();
-
-            while(reader.hasNext()) {
-                String Line = reader.nextLine();
-                String[] tokens = Line.split(" ");
-                Position position = new Position(tokens[0],
-                        Double.parseDouble(tokens[1]),
-                                Double.parseDouble(tokens[2]));
-                positions.add(position);
-            }
-        }
-        catch(IOException io) {
-            System.err.println(io.getMessage());
-            exit(1);
-        }
-
-    }
-    */
 
     /**
      * This method will find the portfolio file in the account directory if it can be found.
@@ -113,7 +87,7 @@ public class Account {
 
         Account PersonalInvest = new Account ("Personal Invest", PERSONALINVEST_CODE);
         Account RothIRA = new Account("Roth IRA", ROTHIRA_CODE);
-        ArrayList<Account> portfolio = new ArrayList<>();
+        List<Account> portfolio = new ArrayList<>();
         portfolio.add(PersonalInvest);
         portfolio.add(RothIRA);
 
@@ -153,7 +127,7 @@ public class Account {
                 double posQuantity = Double.parseDouble(tokens[3]);
                 double posValue = Double.parseDouble(tokens[4].substring(1));
 
-                Position position = new Position(posName, posValue, posQuantity);
+                Position position = new Position(posName, posValue, posQuantity, thisAccount);
 
                 thisAccount.positions.add(position);
             }
@@ -180,6 +154,14 @@ public class Account {
      */
     public double getTotalValue() {
         return totalValue;
+    }
+
+    /**
+     * Return the template associated with this account.
+     * @return
+     */
+    public Template getTemplate() {
+        return template;
     }
 
     /**
@@ -297,4 +279,6 @@ public class Account {
             rebalanceComplete = true;
         }
     }
+
+
 }

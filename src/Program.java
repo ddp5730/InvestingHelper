@@ -1,9 +1,7 @@
 import Invest.Account;
 import Invest.Template;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -43,9 +41,7 @@ public class Program {
             exit(1);
         }
 
-        for (Account account : accounts) {
-            account.debug(false);
-        }
+        mainLoop();
 
     }
 
@@ -93,7 +89,6 @@ public class Program {
      * @param account the account to rebalance
      */
     public static void calculateReBalance(Account account) {
-        account.setTemplate(Template.TEMPLATE);
         account.setTemplatePercentage();
         account.setTotalValue();
         account.sortPositions();

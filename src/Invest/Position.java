@@ -1,5 +1,7 @@
 package Invest;
 
+import java.util.List;
+
 /**
  * This class will represent a single position.
  */
@@ -11,6 +13,7 @@ public class Position implements Comparable<Position>{
     private double accountValue;
 
     private double templatePercent;
+    private Account account;
 
     public int quantityToBuy;
 
@@ -20,8 +23,9 @@ public class Position implements Comparable<Position>{
      * @param value its current value
      * @param quantity the current quanity
      */
-    public Position(String symbol, double value, double quantity) {
-        this.symbol = symbol;
+    public Position(String symbol, double value, double quantity, Account account) {
+        this.account = account;
+        this.symbol = checkTemplatePositions(symbol);
         this.value = value;
         this.quantity = quantity;
 
@@ -133,5 +137,17 @@ public class Position implements Comparable<Position>{
 
     public void removeQuantity(double value) {
         quantity -= value;
+    }
+
+    private String checkTemplatePositions (String name) {
+        List<PositionTemplate> templatePositions = account.getTemplate().positions;
+
+        for (PositionTemplate posTemp : templatePositions) {
+            if (posTemp.getSymbol().equals(name)) {
+                return name;
+            }
+        }
+
+        return "CASH";
     }
 }
