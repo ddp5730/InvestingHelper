@@ -48,7 +48,7 @@ public class Program {
     /**
      * Carries out the main program loop
      */
-    public static void mainLoop() {
+    private static void mainLoop() {
         System.out.println("Program Start");
         System.out.println("--------------------------");
 
@@ -75,7 +75,7 @@ public class Program {
     /**
      * Displays a prompt for the next action
      */
-    public static void prompt() {
+    private static void prompt() {
         System.out.println("Select an account to run program on");
         for (int i = 0; i < accounts.size(); i++) {
             System.out.println("\t" + (i + 1) + ")\t " + accounts.get(i));
@@ -88,10 +88,9 @@ public class Program {
      * Calculates the rebalance
      * @param account the account to rebalance
      */
-    public static void calculateReBalance(Account account) {
-        account.setTemplatePercentage();
-        account.setTotalValue();
-        account.sortPositions();
+    private static void calculateReBalance(Account account) {
+        account.initializeAccount();
+
         System.out.println("\nBefore Rebalance");
         System.out.println("----------------------------------------");
         account.debug(false);

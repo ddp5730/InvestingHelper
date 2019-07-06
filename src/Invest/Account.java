@@ -47,7 +47,7 @@ public class Account {
     /**
      * Returns the flag that checks if the rebalance is complete in the
      * sortPositions method.
-     * @return
+     * @return the rebalanceComplete tag.
      */
     public boolean isRebalanceComplete() {
         return rebalanceComplete;
@@ -57,20 +57,25 @@ public class Account {
      * This method will find the portfolio file in the account directory if it can be found.
      * @return The file if it exists; null if not.
      */
-    private static File findInvestmentFile(String accountDir) {
+    private static File findInvestmentFile(String accountDir) throws FileNotFoundException {
         File dir = new File(accountDir);
         File[] files = dir.listFiles();
 
         File portfolioFile = null;
-        for (File file : files) {
-            String filename = file.getName();
-            if (filename.startsWith(FILE_PREFIX)) {
-                portfolioFile = file;
-                break;
+        try {
+            for (File file : files) {
+                String filename = file.getName();
+                if (filename.startsWith(FILE_PREFIX)) {
+                    portfolioFile = file;
+                    break;
+                }
             }
-        }
 
-        return portfolioFile;
+            return portfolioFile;
+        }
+        catch (NullPointerException npe) {
+            throw new FileNotFoundException();
+        }
     }
 
 
@@ -110,9 +115,8 @@ public class Account {
                 String accountCode = tokens[0];
 
                 Account thisAccount = null;
-                for (int i = 0; i < portfolio.size(); i++) {
-                    Account account = portfolio.get(i);
-                    if(account.code.equals(accountCode)) {
+                for (Account account : portfolio) {
+                    if (account.code.equals(accountCode)) {
                         thisAccount = account;
                         break;
                     }
@@ -141,16 +145,25 @@ public class Account {
     }
 
     /**
+     * This method will initialize the total value
+     */
+    private void initializeTotalValue() {
+        for (Position pos : positions) {
+            totalValue += pos.getTotalValue();
+        }
+    }
+
+    /**
      * Sets the proper template for comparison.
      * @param template the Invest.Template to comapare with
      */
-    public void setTemplate(Template template) {
+    void setTemplate(Template template) {
         this.template = template;
     }
 
     /**
      * Returns the totalValue of the account
-     * @return
+     * @return the total value of the account
      */
     public double getTotalValue() {
         return totalValue;
@@ -158,9 +171,9 @@ public class Account {
 
     /**
      * Return the template associated with this account.
-     * @return
+     * @return the template
      */
-    public Template getTemplate() {
+    Template getTemplate() {
         return template;
     }
 
@@ -176,30 +189,22 @@ public class Account {
     /**
      * Calculates the percentageOfTotal for all positions
      */
-    public void setTotalValue() {
-        for (int i = 0; i < positions.size(); i++) {
-            positions.get(i).setAccountValue(totalValue);
+    private void setTotalValueInPos() {
+        for (Position position : positions) {
+            position.setAccountValue(totalValue);
         }
     }
 
     /**
      * Calculates the percentatgeOfTemplate for all positions in the account
      */
-    public void setTemplatePercentage() {
-        for (int i = 0; i < positions.size(); i++) {
-            int index = template.indexOf(positions.get(i).getSymbol());
-            double templatePecentage = template.positions.get(index).getPercentage();
+    private void setTemplatePercentage() {
+        for (Position position : positions) {
+            int index = template.indexOf(position.getSymbol());
+            double templatePercentage = template.positions.get(index).getPercentage();
 
-            positions.get(i).setTemplatePercentage(templatePecentage);
+            position.setTemplatePercentage(templatePercentage);
         }
-    }
-
-    private double getValueAfterBuy() {
-        double value = 0;
-        for (Position pos : positions) {
-            value += pos.getValueAfterBuy();
-        }
-        return value;
     }
 
     /**
@@ -207,13 +212,10 @@ public class Account {
      * May make into an official method
      */
     public void debug(boolean afterBuy) {
-        System.out.printf(name + "| Original Value $%8.3f", totalValue);
-        if (afterBuy) {
-            System.out.printf("  Value after puchases $%8.3f\n", getValueAfterBuy());
-        }
-        else {
-            System.out.println();
-        }
+        System.out.printf(name + "| Value $%8.3f", totalValue);
+
+        System.out.println();
+
         for (Position pos : positions) {
             System.out.print(pos.toString());
             if (afterBuy) {
@@ -233,7 +235,7 @@ public class Account {
      * Also calculates if the rebalance has been completed by if the stock with
      * the lowest percentageOfTemplate is too expensive to buy.
      */
-    public void sortPositions() {
+    private void sortPositions() {
         positions.sort((Position o1, Position o2) ->
                 (int)(1000 * (o1.calculatePercentageOfTemplate() - o2.calculatePercentageOfTemplate())));
     }
@@ -244,7 +246,7 @@ public class Account {
      * @param symbol the symbol to check
      * @return its index
      */
-    public int indexOfSymbol(String symbol) {
+    private int indexOfSymbol(String symbol) {
         for (int i = 0; i < positions.size(); i++ ) {
             if (positions.get(i).getSymbol().equals(symbol)) {
                 return i;
@@ -272,7 +274,7 @@ public class Account {
     /**
      * Will recalculate to see if the rebalance algorithm is complete
      */
-    public void checkRebalanceComplete() {
+    private void checkRebalanceComplete() {
         sortPositions();
         double cashValue = positions.get(indexOfSymbol("CASH")).getTotalValue();
         if (cashValue < positions.get(0).getValue()) {
@@ -280,5 +282,11 @@ public class Account {
         }
     }
 
+    public void initializeAccount() {
+        initializeTotalValue();
+        setTemplatePercentage();
+        setTotalValueInPos();
+        sortPositions();
+    }
 
 }

@@ -15,7 +15,7 @@ public class Position implements Comparable<Position>{
     private double templatePercent;
     private Account account;
 
-    public int quantityToBuy;
+    int quantityToBuy;
 
     /**
      * Create a new Invest.Position
@@ -23,7 +23,7 @@ public class Position implements Comparable<Position>{
      * @param value its current value
      * @param quantity the current quanity
      */
-    public Position(String symbol, double value, double quantity, Account account) {
+    Position(String symbol, double value, double quantity, Account account) {
         this.account = account;
         this.symbol = checkTemplatePositions(symbol);
         this.value = value;
@@ -36,76 +36,76 @@ public class Position implements Comparable<Position>{
 
     /**
      * Returns the quantity
-     * @return
+     * @return the quantity
      */
     public double getQuantity() {
         return quantity;
     }
 
-    public double getTotalQuantity() {
+    private double getTotalQuantity() {
         return quantity + quantityToBuy;
     }
 
     /**
      * Returns the value
-     * @return
+     * @return the value
      */
-    public double getValue() {
+    double getValue() {
         return value;
     }
 
     /**
      * Returns the symbol
-     * @return
+     * @return the symbol
      */
-    public String getSymbol() {
+    String getSymbol() {
         return symbol;
     }
 
     /**
      * Returns the PercentageOfTotal
-     * @return
+     * @return the percentage of total.
      */
-    public double getPercentageOfTotal() {
+    private double getPercentageOfTotal() {
         return getValueAfterBuy() / accountValue;
     }
 
     /**
      * Returns the percentageOfTemplate
-     * @return
+     * @return the percentageOfTemplate
      */
-    public double getPercentageOfTemplate() {
+    private double getPercentageOfTemplate() {
         return calculatePercentageOfTemplate();
     }
 
-    public double getTotalValue() {
+    double getTotalValue() {
         return quantity * value;
     }
 
-    public double getValueAfterBuy() {
+    private double getValueAfterBuy() {
         return getTotalQuantity() * value;
     }
     /**
      * Calculates the percentage value of a total that this Invest.Position is worth.
      * @return the percentage value.
      */
-    public double calculatePercentageOfTotal() {
+    private double calculatePercentageOfTotal() {
 
         return (getTotalQuantity() * value) / accountValue;
     }
 
-    public void setAccountValue(double value) {
+    void setAccountValue(double value) {
         accountValue = value;
     }
 
-    public void setTemplatePercentage(double percent) {
+    void setTemplatePercentage(double percent) {
         templatePercent = percent;
     }
 
     /**
      * Calculates the percentageOfTemplate for this Position and assigns it
      */
-    public double calculatePercentageOfTemplate() {
+    double calculatePercentageOfTemplate() {
         return calculatePercentageOfTotal() / templatePercent;
     }
 
@@ -123,28 +123,28 @@ public class Position implements Comparable<Position>{
 
     /**
      * Compares instances of Positions, allows natural ordering.
-     * @param other
-     * @return
+     * @param other The Position to be compared to.
+     * @return a negative if this is less, 0 if equal, and positive if this is less.
      */
     public int compareTo(Position other) {
         return (int)(1000*(other.calculatePercentageOfTemplate() - this.calculatePercentageOfTemplate()));
     }
 
-    public double buy() {
+    double buy() {
         quantityToBuy++;
         return value;
     }
 
-    public void removeQuantity(double value) {
+    void removeQuantity(double value) {
         quantity -= value;
     }
 
-    private String checkTemplatePositions (String name) {
+    private String checkTemplatePositions (String symbol) {
         List<PositionTemplate> templatePositions = account.getTemplate().positions;
 
         for (PositionTemplate posTemp : templatePositions) {
-            if (posTemp.getSymbol().equals(name)) {
-                return name;
+            if (posTemp.getSymbol().equals(symbol)) {
+                return symbol;
             }
         }
 
