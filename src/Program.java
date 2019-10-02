@@ -13,6 +13,7 @@ import static java.lang.System.exit;
  *
  * Possible Changes:
  * !!!!Fix to work if CASH Template Percentage not 0
+ * !!!!Will not tell you to buy a new position in template but not already owned.
  *
  * Make Invest.Account and Invest.Position Abstract Classes
  * Use Maps instead of Lists
