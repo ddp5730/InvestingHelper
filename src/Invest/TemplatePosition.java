@@ -1,9 +1,9 @@
 package Invest;
 
 /**
- * A class to represent a PositionTemplate within a Template (account).
+ * A class to represent a TemplatePosition within a Template (account).
  */
-public class PositionTemplate {
+public class TemplatePosition {
 
     private String symbol;
     private double percentage;
@@ -13,7 +13,7 @@ public class PositionTemplate {
      * @param symbol the symbol for the position template
      * @param percentage the percentage(OfTotal) hoped to achieve.
      */
-    public PositionTemplate(String symbol, double percentage) {
+    public TemplatePosition(String symbol, double percentage) {
         this.symbol = symbol;
         this.percentage = percentage;
     }

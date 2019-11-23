@@ -1,6 +1,7 @@
 package Invest;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class will represent a single position.
@@ -25,6 +26,7 @@ public class Position implements Comparable<Position>{
      */
     Position(String symbol, double value, double quantity, Account account) {
         this.account = account;
+        // TODO Add logic to handle if not in template??
         this.symbol = checkTemplatePositions(symbol);
         this.value = value;
         this.quantity = quantity;
@@ -139,11 +141,17 @@ public class Position implements Comparable<Position>{
         quantity -= value;
     }
 
+    /**
+     * Will check if position is in the template.  If not, it assumes the name corresponds to CASH.
+     * TODO Fix this poor logic.
+     * @param symbol the symbol to search for
+     * @return the symbol if it was in template.  "CASH" if not.
+     */
     private String checkTemplatePositions (String symbol) {
-        List<PositionTemplate> templatePositions = account.getTemplate().positions;
+        Map<String, TemplatePosition> templatePositions = account.getTemplate().getPositions();
 
-        for (PositionTemplate posTemp : templatePositions) {
-            if (posTemp.getSymbol().equals(symbol)) {
+        for (String tempSymbol : templatePositions.keySet()) {
+            if (tempSymbol.equals(symbol)) {
                 return symbol;
             }
         }

@@ -200,8 +200,8 @@ public class Account {
      */
     private void setTemplatePercentage() {
         for (Position position : positions) {
-            int index = template.indexOf(position.getSymbol());
-            double templatePercentage = template.positions.get(index).getPercentage();
+            String symbol = position.getSymbol();
+            double templatePercentage = template.getPositions().get(symbol).getPercentage();
 
             position.setTemplatePercentage(templatePercentage);
         }
