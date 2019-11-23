@@ -3,9 +3,7 @@ package Invest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.System.exit;
 
@@ -141,7 +139,39 @@ public class Account {
             exit(1);
         }
 
+        addNewTemplatePositions(portfolio);
+
         return portfolio;
+    }
+
+    /**
+     * This method will add any new positions in the template to the account accordingly.
+     * @param portfolio the portfolio to add new positions to.
+     */
+    private static void addNewTemplatePositions(List<Account> portfolio) {
+        Map<String, Double> userInputs = new HashMap<>();
+
+        for (Account account : portfolio) {
+            Set<String> symbolsInAccount = new HashSet<>();
+            for (Position position : account.positions) {
+                symbolsInAccount.add(position.getSymbol());
+            }
+
+            for (String symbol : account.getTemplate().getPositions().keySet()) {
+                if (!symbolsInAccount.contains(symbol)) {
+                    if (!userInputs.containsKey(symbol)) {
+                        Scanner sc = new Scanner(System.in);
+                        System.out.print("What was the most recent price of " + symbol + ": ");
+                        double value = sc.nextDouble();
+
+                        userInputs.put(symbol, value);
+                    }
+
+                    Position pos = new Position(symbol, userInputs.get(symbol), 0, account);
+                    account.positions.add(pos);
+                }
+            }
+        }
     }
 
     /**

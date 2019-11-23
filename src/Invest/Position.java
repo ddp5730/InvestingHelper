@@ -148,6 +148,7 @@ public class Position implements Comparable<Position>{
      * @return the symbol if it was in template.  "CASH" if not.
      */
     private String checkTemplatePositions (String symbol) {
+        // Shouldn't need to know what account it is part of.
         Map<String, TemplatePosition> templatePositions = account.getTemplate().getPositions();
 
         for (String tempSymbol : templatePositions.keySet()) {
