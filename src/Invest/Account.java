@@ -15,6 +15,8 @@ public class Account {
     private static final String FILE_PREFIX = "Portfolio_Position";
     private static final String PERSONALINVEST_CODE = "X78636590";
     private static final String ROTHIRA_CODE = "229366432";
+    private static final String[] CASH_CODES = {"SPAXX**", "CORE**"};
+    private static final String CASH_SYMBOL = "CASH";
 
     private String name;
     private String code;
@@ -126,10 +128,16 @@ public class Account {
                 }
 
                 String posName = tokens[1];
+                for (String str : CASH_CODES) {
+                    if (str.equals(posName)) {
+                        posName = CASH_SYMBOL;
+                        break;
+                    }
+                }
                 double posQuantity = Double.parseDouble(tokens[3]);
                 double posValue = Double.parseDouble(tokens[4].substring(1));
 
-                Position position = new Position(posName, posValue, posQuantity, thisAccount);
+                Position position = new Position(posName, posValue, posQuantity);
 
                 thisAccount.positions.add(position);
             }
@@ -167,7 +175,7 @@ public class Account {
                         userInputs.put(symbol, value);
                     }
 
-                    Position pos = new Position(symbol, userInputs.get(symbol), 0, account);
+                    Position pos = new Position(symbol, userInputs.get(symbol), 0);
                     account.positions.add(pos);
                 }
             }
@@ -231,7 +239,13 @@ public class Account {
     private void setTemplatePercentage() {
         for (Position position : positions) {
             String symbol = position.getSymbol();
-            double templatePercentage = template.getPositions().get(symbol).getPercentage();
+            double templatePercentage;
+            if (template.getPositions().containsKey(symbol)) {
+                templatePercentage = template.getPositions().get(symbol).getPercentage();
+            }
+            else {
+                templatePercentage = 0;
+            }
 
             position.setTemplatePercentage(templatePercentage);
         }

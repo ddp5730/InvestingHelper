@@ -17,6 +17,8 @@ import static java.lang.System.exit;
  * !!!!Will not tell you to buy a new position in template but not already owned.
  *
  * Need logic for selling positions if too highly weighted.
+ * Add functionality to pull new template position info from the web.
+ * Store account names in a file.
  *
  * Allow to view template percentage expected.
  * Make Invest.Account and Invest.Position Abstract Classes

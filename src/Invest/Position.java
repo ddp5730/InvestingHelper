@@ -14,7 +14,6 @@ public class Position implements Comparable<Position>{
     private double accountValue;
 
     private double templatePercent;
-    private Account account;
 
     int quantityToBuy;
 
@@ -24,10 +23,8 @@ public class Position implements Comparable<Position>{
      * @param value its current value
      * @param quantity the current quanity
      */
-    Position(String symbol, double value, double quantity, Account account) {
-        this.account = account;
-        // TODO Add logic to handle if not in template??
-        this.symbol = checkTemplatePositions(symbol);
+    Position(String symbol, double value, double quantity) {
+        this.symbol = symbol;
         this.value = value;
         this.quantity = quantity;
 
@@ -119,8 +116,9 @@ public class Position implements Comparable<Position>{
     @Override
     public String toString() {
         return String.format("%4s | TotalValue: $%8.3f Quanity: %8.2f  Value/Share: $%8.3f   PercentOfAccount:  %4.1f%%   " +
-                        "PercentOfTemplate: %8.1f%%",
-                symbol, getValueAfterBuy(), quantity, value, getPercentageOfTotal() * 100, getPercentageOfTemplate()*100);
+                        "/ %4.1f%%   PercentOfTemplate: %8.1f%%",
+                symbol, getValueAfterBuy(), quantity, value, getPercentageOfTotal() * 100,
+                templatePercent * 100, getPercentageOfTemplate() * 100);
     }
 
     /**
@@ -139,24 +137,5 @@ public class Position implements Comparable<Position>{
 
     void removeQuantity(double value) {
         quantity -= value;
-    }
-
-    /**
-     * Will check if position is in the template.  If not, it assumes the name corresponds to CASH.
-     * TODO Fix this poor logic.
-     * @param symbol the symbol to search for
-     * @return the symbol if it was in template.  "CASH" if not.
-     */
-    private String checkTemplatePositions (String symbol) {
-        // Shouldn't need to know what account it is part of.
-        Map<String, TemplatePosition> templatePositions = account.getTemplate().getPositions();
-
-        for (String tempSymbol : templatePositions.keySet()) {
-            if (tempSymbol.equals(symbol)) {
-                return symbol;
-            }
-        }
-
-        return "CASH";
     }
 }
