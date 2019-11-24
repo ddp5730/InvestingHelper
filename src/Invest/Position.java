@@ -13,7 +13,7 @@ public class Position implements Comparable<Position>{
     private double quantity;
     private double accountValue;
 
-    private double templatePercent;
+    double templatePercent;
 
     int quantityToBuy;
 

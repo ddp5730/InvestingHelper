@@ -23,6 +23,7 @@ public class Account {
     private double totalValue;
 
     private List<Position> positions;
+    private CashPosition cashPosition;
     private Template template;
 
     private boolean rebalanceComplete;
@@ -137,9 +138,15 @@ public class Account {
                 double posQuantity = Double.parseDouble(tokens[3]);
                 double posValue = Double.parseDouble(tokens[4].substring(1));
 
-                Position position = new Position(posName, posValue, posQuantity);
+                if (posName.equals(CASH_SYMBOL)) {
+                    thisAccount.cashPosition = new CashPosition(posName, posValue, posQuantity);
+                }
+                else {
+                    Position position = new Position(posName, posValue, posQuantity);
+                    thisAccount.positions.add(position);
+                }
 
-                thisAccount.positions.add(position);
+
             }
         }
         catch (IOException io) {
@@ -163,6 +170,7 @@ public class Account {
             Set<String> symbolsInAccount = new HashSet<>();
             for (Position position : account.positions) {
                 symbolsInAccount.add(position.getSymbol());
+                symbolsInAccount.add(account.cashPosition.getSymbol());
             }
 
             for (String symbol : account.getTemplate().getPositions().keySet()) {
@@ -189,13 +197,14 @@ public class Account {
         for (Position pos : positions) {
             totalValue += pos.getTotalValue();
         }
+        totalValue += cashPosition.getTotalValue();
     }
 
     /**
      * Sets the proper template for comparison.
      * @param template the Invest.Template to comapare with
      */
-    void setTemplate(Template template) {
+    private void setTemplate(Template template) {
         this.template = template;
     }
 
@@ -203,7 +212,7 @@ public class Account {
      * Returns the totalValue of the account
      * @return the total value of the account
      */
-    public double getTotalValue() {
+    double getTotalValue() {
         return totalValue;
     }
 
@@ -211,7 +220,7 @@ public class Account {
      * Return the template associated with this account.
      * @return the template
      */
-    Template getTemplate() {
+    private Template getTemplate() {
         return template;
     }
 
@@ -231,6 +240,7 @@ public class Account {
         for (Position position : positions) {
             position.setAccountValue(totalValue);
         }
+        cashPosition.setAccountValue(totalValue);
     }
 
     /**
@@ -249,6 +259,18 @@ public class Account {
 
             position.setTemplatePercentage(templatePercentage);
         }
+
+        String symbol = cashPosition.getSymbol();
+        double templatePercentage;
+        if (template.getPositions().containsKey(symbol)) {
+            templatePercentage = template.getPositions().get(symbol).getPercentage();
+        }
+        else {
+            templatePercentage = 0;
+        }
+
+        cashPosition.setTemplatePercentage(templatePercentage);
+        cashPosition.setReservedCashValue(this);
     }
 
     /**
@@ -269,9 +291,8 @@ public class Account {
                 System.out.println();
             }
         }
+        System.out.println(cashPosition);
 
-        //TODO
-        //Give better symbol
     }
 
     /**
@@ -284,31 +305,15 @@ public class Account {
                 (int)(1000 * (o1.calculatePercentageOfTemplate() - o2.calculatePercentageOfTemplate())));
     }
 
-
-    /**
-     * Performs a linear search and returns the index of the Invest.Position with the symbol specified.
-     * @param symbol the symbol to check
-     * @return its index
-     */
-    private int indexOfSymbol(String symbol) {
-        for (int i = 0; i < positions.size(); i++ ) {
-            if (positions.get(i).getSymbol().equals(symbol)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     /**
      * Will imitate the process of buying a stock
      */
     public void buyStock() {
-        //TODO
-        //Add logic for buying stock and ending program.
+
         checkRebalanceComplete();
         if (!rebalanceComplete) {
             positions.get(0).buy();
-            positions.get(indexOfSymbol("CASH")).removeQuantity(positions.get(0).getValue());
+            cashPosition.removeQuantity(positions.get(0).getValue());
             System.out.printf("%3s should buy +1 share\n", positions.get(0).getSymbol());
             checkRebalanceComplete();
         }
@@ -320,7 +325,7 @@ public class Account {
      */
     private void checkRebalanceComplete() {
         sortPositions();
-        double cashValue = positions.get(indexOfSymbol("CASH")).getTotalValue();
+        double cashValue = cashPosition.getFreeCashValue();
         if (cashValue < positions.get(0).getValue()) {
             rebalanceComplete = true;
         }
