@@ -9,8 +9,7 @@ import java.util.Scanner;
 /**
  * The template account for the program.
  */
-public enum Template {
-    TEMPLATE("Template.txt");
+public class Template {
 
     private Map<String, TemplatePosition> positions;
 

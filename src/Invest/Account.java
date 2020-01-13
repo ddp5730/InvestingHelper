@@ -32,7 +32,7 @@ public class Account {
      * @param name The name of the account.
      * @param code The code for this account in the .csv file.
      */
-    public Account(String name, String code) {
+    public Account(String name, String code, Template template) {
         positions = new ArrayList<>();
 
         this.name = name;
@@ -40,7 +40,7 @@ public class Account {
         totalValue = 0;
 
         rebalanceComplete = false;
-        this.setTemplate(Template.TEMPLATE);
+        this.setTemplate(template);
     }
 
     /**
@@ -171,7 +171,9 @@ public class Account {
             String line = reader.nextLine();
             String tokens[] = line.split(" ");
 
-            portfolio.add(new Account(tokens[0], tokens[1]));
+            Template template = new Template(tokens[2]);
+
+            portfolio.add(new Account(tokens[0], tokens[1], template));
         }
 
         return portfolio;
