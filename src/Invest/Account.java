@@ -169,7 +169,7 @@ public class Account {
         Scanner reader = new Scanner(configFile);
         while (reader.hasNext()) {
             String line = reader.nextLine();
-            String tokens[] = line.split(" ");
+            String[] tokens = line.split(" ");
 
             Template template = new Template(tokens[2]);
 
