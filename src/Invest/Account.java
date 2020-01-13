@@ -13,8 +13,7 @@ import static java.lang.System.exit;
 public class Account {
 
     private static final String FILE_PREFIX = "Portfolio_Position";
-    private static final String PERSONALINVEST_CODE = "X78636590";
-    private static final String ROTHIRA_CODE = "229366432";
+    private static final String CONFIG_FILE = "default.conf";
     private static final String[] CASH_CODES = {"SPAXX**", "CORE**"};
     private static final String CASH_SYMBOL = "CASH";
 
@@ -91,11 +90,7 @@ public class Account {
             throw new FileNotFoundException();
         }
 
-        Account PersonalInvest = new Account ("Personal Invest", PERSONALINVEST_CODE);
-        Account RothIRA = new Account("Roth IRA", ROTHIRA_CODE);
-        List<Account> portfolio = new ArrayList<>();
-        portfolio.add(PersonalInvest);
-        portfolio.add(RothIRA);
+        List<Account> portfolio = readConfigFile();
 
         try {
             Scanner reader = new Scanner(investmentFile);
@@ -160,6 +155,29 @@ public class Account {
     }
 
     /**
+     * Read the config file and initialize the accounts as such.
+     * @return A list of the accounts to process.
+     */
+    private static List<Account> readConfigFile() throws FileNotFoundException{
+        List<Account> portfolio = new ArrayList<>();
+
+        File configFile = new File(CONFIG_FILE);
+        if (!configFile.exists()) {
+            throw new FileNotFoundException();
+        }
+
+        Scanner reader = new Scanner(configFile);
+        while (reader.hasNext()) {
+            String line = reader.nextLine();
+            String tokens[] = line.split(" ");
+
+            portfolio.add(new Account(tokens[0], tokens[1]));
+        }
+
+        return portfolio;
+    }
+
+    /**
      * This method will add any new positions in the template to the account accordingly.
      * @param portfolio the portfolio to add new positions to.
      */
@@ -170,8 +188,8 @@ public class Account {
             Set<String> symbolsInAccount = new HashSet<>();
             for (Position position : account.positions) {
                 symbolsInAccount.add(position.getSymbol());
-                symbolsInAccount.add(account.cashPosition.getSymbol());
             }
+            symbolsInAccount.add(account.cashPosition.getSymbol());
 
             for (String symbol : account.getTemplate().getPositions().keySet()) {
                 if (!symbolsInAccount.contains(symbol)) {
