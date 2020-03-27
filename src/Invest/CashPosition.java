@@ -25,7 +25,7 @@ class CashPosition extends Position{
      * This method will initialize the reservedCashValue and freeCashValue member variables
      * @param account The account in which this position lies.
      */
-    void setReservedCashValue(@org.jetbrains.annotations.NotNull Account account) {
+    void setReservedCashValue(Account account) {
         reservedCashValue = templatePercent * account.getTotalValue();
     }
 

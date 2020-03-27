@@ -1,3 +1,3 @@
 ECHO OFF
-java -jar InvestingHelper_v1.1.jar
+java -jar InvestingHelper_v1.2.jar
 PAUSE
