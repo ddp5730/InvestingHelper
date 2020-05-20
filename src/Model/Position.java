@@ -1,7 +1,4 @@
-package Invest;
-
-import java.util.List;
-import java.util.Map;
+package Model;
 
 /**
  * This class will represent a single position.

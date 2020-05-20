@@ -1,5 +1,4 @@
-import Invest.Account;
-import Invest.Template;
+import Model.Account;
 
 import java.io.FileNotFoundException;
 import java.util.List;

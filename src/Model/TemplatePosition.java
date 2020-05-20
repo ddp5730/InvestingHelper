@@ -1,4 +1,4 @@
-package Invest;
+package Model;
 
 /**
  * A class to represent a TemplatePosition within a Template (account).

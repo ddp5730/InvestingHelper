@@ -1,4 +1,4 @@
-package Invest;
+package Model;
 
 /**
  * This class is like a position, but it has some additional functionality specific to the CASH allocation for a given
